@@ -1,3 +1,0 @@
-{'userId': 'josh', 'fav': ['chicken']}
-{'userId': 'josh', 'fav': ['chicken']}
-{'userId': 'pal', 'fav': ['soup']}
