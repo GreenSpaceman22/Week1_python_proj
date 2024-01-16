@@ -10,14 +10,11 @@ app = Flask(__name__)
 
 @app.get('/on_page_load')
 def load_it():
-    print("in the get")
     cursor = collection.find()
     each_user_data = {}
     for document in cursor:
         user_returning = document.get('user_name')
-        print(user_returning)
         user_returned_notes = document.get('Note')
-        print(user_returned_notes)
         each_user_data[user_returning] = user_returned_notes
         with open(f'{user_returning}.txt', 'w') as returning_user:
             returning_user.write(user_returned_notes)
