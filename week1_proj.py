@@ -8,6 +8,21 @@ db = client['stickynoteapp']
 collection = db['user_note_app']
 app = Flask(__name__)
 
+@app.get('/on_page_load')
+def load_it():
+    print("in the get")
+    cursor = collection.find()
+    each_user_data = {}
+    for document in cursor:
+        user_returning = document.get('user_name')
+        print(user_returning)
+        user_returned_notes = document.get('Note')
+        print(user_returned_notes)
+        each_user_data[user_returning] = user_returned_notes
+        with open(f'{user_returning}.txt', 'w') as returning_user:
+            returning_user.write(user_returned_notes)
+    return jsonify(each_user_data)
+
 
 @app.post('/post_it')
 def post_it():
@@ -23,7 +38,7 @@ def post_it():
     if count_documents == 0:
         collection.insert_one({'user_name' : user_id, 'Note' : notes})
         with open(f'{user_id}.txt', 'w') as new_user_notes:
-            new_user_notes.write(notes)
+            new_user_notes.write(f"{notes}\n")
         
     else: 
         user_list = []
@@ -31,7 +46,7 @@ def post_it():
             user_list.append(document.get('user_name'))
         if user_id in user_list:
             with open(f'{user_id}.txt', 'a') as user_notes:
-                user_notes.write(notes)
+                user_notes.write(f"{notes}\n")
                 user_notes.close()
             with open(f'{user_id}.txt', 'r') as user_notes_read:
                 new_notes = user_notes_read.read()
@@ -39,7 +54,7 @@ def post_it():
                 collection.update_one(user_to_find, update_data) 
         else:
             with open(f'{user_id}.txt', 'w') as new_user_notes:
-                new_user_notes.write(notes)
+                new_user_notes.write(f"{notes}\n")
                 collection.insert_one({'user_name' : user_id, 'Note' : notes})   
        
     return jsonify({user_id : notes}) 
